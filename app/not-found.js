@@ -1,6 +1,21 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
 
 export default function ComingSoon() {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNotify = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    // Here you would send the email to your API
+    // For now, we simulate success
+    setSubscribed(true);
+    setEmail("");
+    setTimeout(() => setSubscribed(false), 4000);
+  };
+
   return (
     <div className="relative bg-white text-gray-900 min-h-screen flex items-center justify-center px-4 overflow-hidden">
       {/* Background decorative blobs */}
@@ -12,7 +27,7 @@ export default function ComingSoon() {
 
       <div className="relative max-w-xl w-full mx-auto text-center">
         {/* Animated gradient border card */}
-        <div className="relative p-[3px] rounded-2xl overflow-hidden shadow-lg mb-12">
+        <div className="relative p-[3px] rounded-2xl overflow-hidden shadow-lg mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-shift" />
           <div className="relative bg-white rounded-2xl p-10 border border-gray-200">
             {/* Icon */}
@@ -34,26 +49,38 @@ export default function ComingSoon() {
               We’re working hard to bring you a revolutionary AI experience. Get ready to build, chat, and create like never before.
             </p>
 
-            {/* Visual email subscription (no functionality) */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1.5">
-              <input
-                type="email"
-                placeholder="Your email address..."
-                className="flex-1 bg-transparent px-4 py-2.5 outline-none text-sm text-gray-700"
-                disabled
-              />
-              <button className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium text-sm shadow-md">
-                Notify Me
-              </button>
-            </div>
-            <p className="text-xs text-gray-400 mt-3">We’ll let you know when we launch ✨</p>
+            {/* Functional email subscription */}
+            <form onSubmit={handleNotify}>
+              <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1.5">
+                <input
+                  type="email"
+                  placeholder="Your email address..."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 bg-transparent px-4 py-2.5 outline-none text-sm text-gray-700"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                  {subscribed ? "✓ You're on the list!" : "Notify Me"}
+                </button>
+              </div>
+            </form>
+            {subscribed && (
+              <p className="text-xs text-green-600 mt-3">Thanks! We’ll notify you when we launch ✨</p>
+            )}
+            {!subscribed && (
+              <p className="text-xs text-gray-400 mt-3">No spam, just the launch announcement.</p>
+            )}
           </div>
         </div>
 
-        {/* Back to home link */}
+        {/* Styled Back to Home button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-300 text-gray-700 font-medium hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
