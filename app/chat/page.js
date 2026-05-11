@@ -5,14 +5,26 @@ import ChatExampleSection from "@/components/chat/ChatExampleSection";
 import ChatFAQSection from "@/components/chat/ChatFAQSection";
 import ChatStatsSection from "@/components/chat/ChatStatsSection";
 
+// Quick prompts – friendly, non‑coding topics
 const quickPromptsList = [
-  "Make a portfolio website",
   "Tell me a joke",
-  "Explain AI",
-  "Write a React component",
+  "How are you?",
   "Give me study tips",
-  "Create a business plan",
+  "Motivate me",
+  "What's your name?",
+  "Tell me a fun fact",
 ];
+
+/* ── Animated typing bubbles (bouncing dots) ── */
+function TypingDots() {
+  return (
+    <div className="flex items-center space-x-1 px-4 py-3 bg-gray-100 rounded-2xl rounded-bl-sm w-fit">
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]" />
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:150ms]" />
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:300ms]" />
+    </div>
+  );
+}
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -66,7 +78,7 @@ export default function ChatPage() {
           </span>
         </h1>
         <p className="max-w-2xl mx-auto text-lg text-gray-600">
-          Ask anything — our AI understands every language and replies like a real assistant.
+          Your friendly personal assistant. Ask me anything – no coding, just conversation.
         </p>
       </section>
 
@@ -91,11 +103,14 @@ export default function ChatPage() {
           <div className="relative p-[3px] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-shift" />
             <div className="relative bg-white rounded-2xl border border-gray-200 flex flex-col" style={{ height: "450px" }}>
-              {/* Messages */}
-              <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.length === 0 && (
+              {/* Messages with custom scrollbar */}
+              <div
+                ref={chatContainerRef}
+                className="flex-1 overflow-y-auto p-4 space-y-4 chat-scroll"
+              >
+                {messages.length === 0 && !loading && (
                   <div className="h-full flex items-center justify-center">
-                    <p className="text-gray-400">Start a conversation below </p>
+                    <p className="text-gray-400">Start a conversation below!..</p>
                   </div>
                 )}
                 {messages.map((msg, i) => (
@@ -103,9 +118,7 @@ export default function ChatPage() {
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-100 px-4 py-3 rounded-2xl rounded-bl-sm text-gray-500">
-                      AI is typing…
-                    </div>
+                    <TypingDots />
                   </div>
                 )}
               </div>

@@ -304,7 +304,7 @@ export default function BuilderPage() {
               </div>
             ) : (
               <div className="flex items-center justify-center h-full min-h-[300px] border border-dashed border-gray-300 rounded-2xl">
-                <p className="text-gray-400">Your generated website will appear here ✨</p>
+                <p className="text-gray-400">Your generated website will appear here!</p>
               </div>
             )}
           </div>

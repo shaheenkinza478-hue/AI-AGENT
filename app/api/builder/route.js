@@ -4,12 +4,12 @@ import { v4 as uuidv4 } from "@/lib/utils";
 
 export async function POST(request) {
   try {
-    const { prompt } = await request.json();
+    const { prompt, previousCode } = await request.json();
     if (!prompt) {
       return new Response(JSON.stringify({ error: "Prompt is required" }), { status: 400 });
     }
 
-    const code = await generateFromPrompt(prompt);
+    const code = await generateFromPrompt(prompt, previousCode || null);
     const id = uuidv4();
     codeStore.set(id, { code, prompt, timestamp: Date.now() });
 
