@@ -1,14 +1,18 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 /* ── Quick prompt chips ── */
 const quickPrompts = [
-  "A dark portfolio site",
-  "A landing page for a SaaS product",
-  "A blog with a navbar and footer",
-  "An e‑commerce product card",
-  "A Next.js hero section",
-  "A responsive dashboard layout",
+  { label: "🛍️ Fashion Store", text: "A professional ecommerce store for fashion clothing with product grid, flash sale, cart, and footer" },
+  { label: "📷 Photographer Portfolio", text: "A dark portfolio site for a photographer with gallery, testimonials, and booking form" },
+  { label: "🚀 SaaS Landing Page", text: "A SaaS landing page with pricing plans, features grid, FAQ, and sign-up CTA" },
+  { label: "🍽️ Restaurant Website", text: "A restaurant website with menu tabs, online reservation form, gallery, and reviews" },
+  { label: "💪 Fitness Gym", text: "A fitness gym website with class schedule, trainer profiles, membership plans" },
+  { label: "🏠 Real Estate Agency", text: "A real estate agency website with property listings grid, search filters, and agent profiles" },
+  { label: "🎓 Online Courses", text: "An online learning platform with course categories, featured courses grid, and instructor profiles" },
+  { label: "☕ Coffee Shop", text: "A cozy coffee shop website with menu, loyalty program, gallery, and location" },
 ];
 
 /* ── Builder features (unchanged) ── */
@@ -77,6 +81,15 @@ const steps = [
 ];
 
 export default function BuilderPage() {
+  return (
+    <Suspense>
+      <BuilderContent />
+    </Suspense>
+  );
+}
+
+function BuilderContent() {
+  const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -84,11 +97,23 @@ export default function BuilderPage() {
   const [view, setView] = useState("preview");
   const [refineInput, setRefineInput] = useState("");
   const [refining, setRefining] = useState(false);
+  const [copied, setCopied] = useState(false);
   const resultRef = useRef(null);
+  const didAutoGenerate = useRef(false);
 
-  const handleGenerate = async (e) => {
-    e?.preventDefault();
-    if (!prompt.trim()) return;
+  // Read ?prompt= from URL (from Templates page) and auto-generate
+  useEffect(() => {
+    const urlPrompt = searchParams.get("prompt");
+    if (urlPrompt && !didAutoGenerate.current) {
+      didAutoGenerate.current = true;
+      setPrompt(urlPrompt);
+      triggerGenerate(urlPrompt);
+    }
+  }, [searchParams]);
+
+  const triggerGenerate = async (p) => {
+    const text = p || prompt;
+    if (!text.trim()) return;
     setLoading(true);
     setError("");
     setResult(null);
@@ -96,22 +121,26 @@ export default function BuilderPage() {
       const res = await fetch("/api/builder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: text }),
       });
       const data = await res.json();
       if (data.code) {
-        setResult({ code: data.code, id: data.id, prompt });
+        setResult({ code: data.code, id: data.id, prompt: text });
         setView("preview");
-        // scroll to result
-        resultRef.current?.scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
       } else {
         setError(data.error || "Generation failed.");
       }
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGenerate = async (e) => {
+    e?.preventDefault();
+    await triggerGenerate(prompt);
   };
 
   const handleRefine = async () => {
@@ -153,34 +182,46 @@ export default function BuilderPage() {
   const copyCode = () => {
     if (!result) return;
     navigator.clipboard.writeText(result.code);
-    alert("Code copied to clipboard!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="bg-white text-gray-900 min-h-screen">
       {/* ─── Hero Heading ─── */}
-      <section className="max-w-6xl mx-auto px-4 pt-20 pb-8 text-center">
+      <section className="max-w-6xl mx-auto px-4 pt-20 pb-6 text-center">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
           Build Websites with AI,{" "}
           <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Instantly
           </span>
         </h1>
-        <p className="max-w-2xl mx-auto text-lg text-gray-600">
+        <p className="max-w-2xl mx-auto text-lg text-gray-600 mb-5">
           Describe the website you want — our AI generates clean HTML, CSS, React, and Tailwind code in seconds.
         </p>
+        <a
+          href="/templates"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 text-blue-700 font-medium text-sm hover:shadow-md hover:border-blue-400 transition-all"
+        >
+          <span>✨</span>
+          Browse ready-made templates
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
       </section>
 
       {/* ─── Quick Prompts ─── */}
       <section className="max-w-6xl mx-auto px-4 pb-8">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {quickPrompts.map((text, i) => (
+        <p className="text-xs text-gray-400 font-medium mb-3 text-center uppercase tracking-wider">Quick start — click to generate</p>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-start">
+          {quickPrompts.map((item, i) => (
             <button
               key={i}
-              onClick={() => setPrompt(text)}
-              className="px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm text-sm font-medium text-gray-700"
+              onClick={() => { setPrompt(item.text); triggerGenerate(item.text); }}
+              className="flex-shrink-0 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 transition-all shadow-sm text-sm font-medium text-gray-700 flex items-center gap-1.5"
             >
-              {text}
+              {item.label}
             </button>
           ))}
         </div>
@@ -208,12 +249,25 @@ export default function BuilderPage() {
                   <button
                     onClick={handleGenerate}
                     disabled={loading || !prompt.trim()}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl font-medium disabled:opacity-50 transition-all shadow-md"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl font-medium disabled:opacity-50 transition-all shadow-md flex items-center gap-2"
                   >
-                    {loading ? "Generating..." : "Generate"}
+                    {loading ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Generating…
+                      </>
+                    ) : "⚡ Generate"}
                   </button>
                 </div>
-                {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+                {error && (
+                  <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+                    <span className="text-red-500 text-lg">⚠️</span>
+                    <p className="text-sm text-red-700 font-medium">{error}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -230,13 +284,22 @@ export default function BuilderPage() {
                     placeholder='e.g. "Make it a dark theme" or "Add a navigation bar"'
                     className="w-full bg-gray-100 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none text-gray-800"
                   />
-                  <div className="mt-3 flex justify-end">
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="text-xs text-gray-400">e.g. dark theme, add pricing section, change to blue</p>
                     <button
                       onClick={handleRefine}
                       disabled={refining || !refineInput.trim()}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-5 py-2 rounded-xl text-sm font-medium disabled:opacity-50 transition-all shadow-md"
+                      className="flex-shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-5 py-2 rounded-xl text-sm font-medium disabled:opacity-50 transition-all shadow-md flex items-center gap-2"
                     >
-                      {refining ? "Refining..." : "Refine"}
+                      {refining ? (
+                        <>
+                          <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Refining…
+                        </>
+                      ) : "✏️ Refine"}
                     </button>
                   </div>
                 </div>
@@ -246,7 +309,35 @@ export default function BuilderPage() {
 
           {/* Right column – Result */}
           <div ref={resultRef}>
-            {result ? (
+            {loading ? (
+              /* ── Loading State ── */
+              <div className="relative p-[3px] rounded-2xl overflow-hidden shadow-lg h-full min-h-[500px]">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-shift" />
+                <div className="relative bg-white rounded-2xl h-full min-h-[500px] flex flex-col items-center justify-center gap-5 p-8">
+                  <div className="relative w-20 h-20">
+                    <div className="absolute inset-0 rounded-full border-4 border-blue-100" />
+                    <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin" />
+                    <div className="absolute inset-2 rounded-full border-4 border-purple-200 border-t-transparent animate-spin" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-gray-800 mb-1">Building your website…</p>
+                    <p className="text-sm text-gray-500">AI is crafting a complete, professional design</p>
+                  </div>
+                  {/* Animated placeholder bars */}
+                  <div className="w-full max-w-sm space-y-3 mt-2">
+                    {[90, 75, 85, 60, 70].map((w, i) => (
+                      <div key={i} className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-200 to-purple-200 rounded-full animate-pulse"
+                          style={{ width: `${w}%`, animationDelay: `${i * 0.15}s` }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400">This usually takes 15–30 seconds</p>
+                </div>
+              </div>
+            ) : result ? (
               <div className="relative p-[3px] rounded-2xl overflow-hidden shadow-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-shift" />
                 <div className="relative bg-white rounded-2xl border border-gray-200 p-6">
@@ -273,9 +364,13 @@ export default function BuilderPage() {
                     </button>
                     <button
                       onClick={copyCode}
-                      className="ml-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-all"
+                      className={`ml-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                        copied
+                          ? "bg-green-100 text-green-700 border border-green-300"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }`}
                     >
-                      Copy Code
+                      {copied ? "✓ Copied!" : "Copy Code"}
                     </button>
                     <button
                       onClick={downloadCode}
@@ -303,8 +398,15 @@ export default function BuilderPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full min-h-[300px] border border-dashed border-gray-300 rounded-2xl">
-                <p className="text-gray-400">Your generated website will appear here!</p>
+              <div className="flex flex-col items-center justify-center h-full min-h-[500px] border-2 border-dashed border-gray-200 rounded-2xl gap-4 text-center p-8 bg-gray-50">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl">
+                  ✨
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-gray-700 mb-1">Your website will appear here</p>
+                  <p className="text-sm text-gray-400">Describe your website or pick a template above</p>
+                </div>
+                <a href="/templates" className="text-sm text-blue-600 hover:underline font-medium">Browse ready-made templates →</a>
               </div>
             )}
           </div>

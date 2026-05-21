@@ -139,6 +139,23 @@ export default function ChatPage() {
 }
 
 /* ── Internal Components ── */
+function renderMarkdown(text) {
+  // Convert **bold**, *italic*, and newlines to JSX
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\n)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part === "\n") {
+      return <br key={i} />;
+    }
+    return part;
+  });
+}
+
 function MessageBubble({ role, content }) {
   const isUser = role === "user";
   return (
@@ -150,7 +167,7 @@ function MessageBubble({ role, content }) {
             : "bg-gray-100 text-gray-800 rounded-bl-sm border border-gray-200"
         }`}
       >
-        {content}
+        {isUser ? content : renderMarkdown(content)}
       </div>
     </div>
   );
