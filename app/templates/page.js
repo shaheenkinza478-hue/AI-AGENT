@@ -2,15 +2,63 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+// ─── SVG Icons for categories (replacing emojis) ───
+const CategoryIcon = ({ id }) => {
+  const icons = {
+    ecommerce: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+      </svg>
+    ),
+    portfolio: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+      </svg>
+    ),
+    saas: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    restaurant: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    health: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
+    realestate: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ),
+    education: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 7l-9-5v5l9 5 9-5v-5l-9 5z" />
+      </svg>
+    ),
+  };
+  return icons[id] || (
+    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  );
+};
+
 // ─── All template categories & prompts ───
 const categories = [
   {
     id: "ecommerce",
     label: "E-Commerce",
-    emoji: "🛍️",
+    emoji: null, // no longer used
     color: "from-orange-500 to-pink-500",
     lightColor: "bg-orange-50 border-orange-200 text-orange-700",
     templates: [
+      // ... (unchanged templates array)
       {
         name: "Fashion Store",
         desc: "Trendy clothing & accessories shop with product grid, filters, and cart",
@@ -44,10 +92,11 @@ const categories = [
   {
     id: "portfolio",
     label: "Portfolio",
-    emoji: "🎨",
+    emoji: null,
     color: "from-purple-500 to-indigo-600",
     lightColor: "bg-purple-50 border-purple-200 text-purple-700",
     templates: [
+      // ... (all templates)
       {
         name: "Developer Portfolio",
         desc: "Clean, dark portfolio for a full-stack developer with projects & skills",
@@ -81,10 +130,11 @@ const categories = [
   {
     id: "saas",
     label: "SaaS / Startup",
-    emoji: "🚀",
+    emoji: null,
     color: "from-blue-500 to-cyan-500",
     lightColor: "bg-blue-50 border-blue-200 text-blue-700",
     templates: [
+      // ... (all templates)
       {
         name: "SaaS Landing Page",
         desc: "Modern product landing page with features, pricing & social proof",
@@ -118,10 +168,11 @@ const categories = [
   {
     id: "restaurant",
     label: "Restaurant",
-    emoji: "🍽️",
+    emoji: null,
     color: "from-red-500 to-orange-500",
     lightColor: "bg-red-50 border-red-200 text-red-700",
     templates: [
+      // ... (all templates)
       {
         name: "Fine Dining Restaurant",
         desc: "Elegant restaurant website with menu, chef showcase and reservations",
@@ -148,10 +199,11 @@ const categories = [
   {
     id: "health",
     label: "Health & Fitness",
-    emoji: "💪",
+    emoji: null,
     color: "from-green-500 to-teal-500",
     lightColor: "bg-green-50 border-green-200 text-green-700",
     templates: [
+      // ... (all templates)
       {
         name: "Gym & Fitness Center",
         desc: "Energetic gym website with classes, trainers and membership plans",
@@ -178,10 +230,11 @@ const categories = [
   {
     id: "realestate",
     label: "Real Estate",
-    emoji: "🏠",
+    emoji: null,
     color: "from-slate-600 to-blue-700",
     lightColor: "bg-slate-50 border-slate-200 text-slate-700",
     templates: [
+      // ... (all templates)
       {
         name: "Real Estate Agency",
         desc: "Full agency website with property listings, search and agents",
@@ -201,10 +254,11 @@ const categories = [
   {
     id: "education",
     label: "Education",
-    emoji: "📚",
+    emoji: null,
     color: "from-yellow-500 to-orange-500",
     lightColor: "bg-yellow-50 border-yellow-200 text-yellow-700",
     templates: [
+      // ... (all templates)
       {
         name: "Online Course Platform",
         desc: "Course marketplace with categories, instructors and enrollment",
@@ -282,26 +336,16 @@ export default function TemplatesPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-950 to-purple-900 text-white py-20 px-4">
-        <div className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, rgba(99,102,241,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(168,85,247,0.3) 0%, transparent 50%)",
-          }}
-        />
-        <div className="relative max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm font-medium mb-6">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            {categories.reduce((acc, c) => acc + c.templates.length, 0)} Ready-to-Use Templates
-          </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-5">
+      {/* ── Hero (now white theme matching other pages) ── */}
+      <section className="relative bg-white px-4 pt-20 pb-16 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-5">
             Pick a Template,{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Build Instantly
             </span>
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Choose from professionally crafted prompts across every industry. One click fills the builder — AI does the rest.
           </p>
         </div>
@@ -321,7 +365,7 @@ export default function TemplatesPage() {
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <span>{cat.emoji}</span>
+                <CategoryIcon id={cat.id} />
                 {cat.label}
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
@@ -341,9 +385,9 @@ export default function TemplatesPage() {
         {/* Category header */}
         <div className="flex items-center gap-3 mb-8">
           <div
-            className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${currentCategory.color} flex items-center justify-center text-2xl shadow-lg`}
+            className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${currentCategory.color} flex items-center justify-center text-white shadow-lg`}
           >
-            {currentCategory.emoji}
+            <CategoryIcon id={currentCategory.id} />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{currentCategory.label} Templates</h2>
@@ -384,9 +428,9 @@ export default function TemplatesPage() {
                 className="group flex flex-col items-center gap-2 p-4 rounded-2xl border border-gray-200 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
                 <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-xl shadow`}
+                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-white shadow`}
                 >
-                  {cat.emoji}
+                  <CategoryIcon id={cat.id} />
                 </div>
                 <span className="text-xs font-semibold text-gray-700 text-center group-hover:text-blue-600 transition-colors">
                   {cat.label}

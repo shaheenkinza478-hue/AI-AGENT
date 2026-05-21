@@ -5,14 +5,14 @@ import { Suspense } from "react";
 
 /* ── Quick prompt chips ── */
 const quickPrompts = [
-  { label: "🛍️ Fashion Store", text: "A professional ecommerce store for fashion clothing with product grid, flash sale, cart, and footer" },
-  { label: "📷 Photographer Portfolio", text: "A dark portfolio site for a photographer with gallery, testimonials, and booking form" },
-  { label: "🚀 SaaS Landing Page", text: "A SaaS landing page with pricing plans, features grid, FAQ, and sign-up CTA" },
-  { label: "🍽️ Restaurant Website", text: "A restaurant website with menu tabs, online reservation form, gallery, and reviews" },
-  { label: "💪 Fitness Gym", text: "A fitness gym website with class schedule, trainer profiles, membership plans" },
-  { label: "🏠 Real Estate Agency", text: "A real estate agency website with property listings grid, search filters, and agent profiles" },
-  { label: "🎓 Online Courses", text: "An online learning platform with course categories, featured courses grid, and instructor profiles" },
-  { label: "☕ Coffee Shop", text: "A cozy coffee shop website with menu, loyalty program, gallery, and location" },
+  { label: " Fashion Store", text: "A professional ecommerce store for fashion clothing with product grid, flash sale, cart, and footer" },
+  { label: " Photographer Portfolio", text: "A dark portfolio site for a photographer with gallery, testimonials, and booking form" },
+  { label: "SaaS Landing Page", text: "A SaaS landing page with pricing plans, features grid, FAQ, and sign-up CTA" },
+  { label: "Restaurant Website", text: "A restaurant website with menu tabs, online reservation form, gallery, and reviews" },
+  { label: " Fitness Gym", text: "A fitness gym website with class schedule, trainer profiles, membership plans" },
+  { label: " Real Estate Agency", text: "A real estate agency website with property listings grid, search filters, and agent profiles" },
+  { label: " Online Courses", text: "An online learning platform with course categories, featured courses grid, and instructor profiles" },
+  { label: " Coffee Shop", text: "A cozy coffee shop website with menu, loyalty program, gallery, and location" },
 ];
 
 /* ── Builder features (unchanged) ── */
@@ -203,7 +203,7 @@ function BuilderContent() {
           href="/templates"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 text-blue-700 font-medium text-sm hover:shadow-md hover:border-blue-400 transition-all"
         >
-          <span>✨</span>
+          <span></span>
           Browse ready-made templates
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -259,12 +259,12 @@ function BuilderContent() {
                         </svg>
                         Generating…
                       </>
-                    ) : "⚡ Generate"}
+                    ) : " Generate"}
                   </button>
                 </div>
                 {error && (
                   <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
-                    <span className="text-red-500 text-lg">⚠️</span>
+                    <span className="text-red-500 text-lg"></span>
                     <p className="text-sm text-red-700 font-medium">{error}</p>
                   </div>
                 )}
@@ -299,7 +299,7 @@ function BuilderContent() {
                           </svg>
                           Refining…
                         </>
-                      ) : "✏️ Refine"}
+                      ) : " Refine"}
                     </button>
                   </div>
                 </div>
@@ -400,7 +400,7 @@ function BuilderContent() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full min-h-[500px] border-2 border-dashed border-gray-200 rounded-2xl gap-4 text-center p-8 bg-gray-50">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl">
-                  ✨
+                
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-gray-700 mb-1">Your website will appear here</p>
